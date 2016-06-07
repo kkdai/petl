@@ -1,6 +1,39 @@
 package petl
 
-import "testing"
+import (
+	"log"
+	"testing"
+	"time"
+)
+
+func foo() {
+	log.Println("foo")
+}
+
+func bar() {
+	log.Println("bar")
+}
+
+func TestSpawn(t *testing.T) {
+
+	Spawn(3, foo, bar)
+	time.Sleep(time.Second * 3)
+}
+
+func TestETL1(t *testing.T) {
+	c := Extract("a s", " smmm", "sss")
+	out := TransformRemoveSpace(c)
+
+	ret := <-out
+	if "as" != ret {
+		t.Error("eror str 1:", ret)
+	}
+
+	ret = <-out
+	if "smmm" != ret {
+		t.Error("eror str 2:", ret)
+	}
+}
 
 func TestPipe(t *testing.T) {
 	// Set up the pipeline.

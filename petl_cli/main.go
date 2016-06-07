@@ -6,7 +6,8 @@ import (
 	"fmt"
 	"io"
 	"os"
-	"strings"
+
+	etl "github.com/kkdai/petl"
 )
 
 func main() {
@@ -41,11 +42,13 @@ func match(pattern string, reader *bufio.Reader) {
 		}
 
 		color := "\x1b[39m"
-		if strings.Contains(input, pattern) {
-			color = "\x1b[31m"
-		}
+		// if strings.Contains(input, pattern) {
+		// 	color = "\x1b[31m"
+		// }
 
-		fmt.Printf("%s%2d: %s", color, line, input)
+		// fmt.Printf("%s%2d: %s", color, line, input)
+		fmt.Printf("%s%2d: %s", color, line, <-etl.TransformRemoveSpace(etl.Extract(input)))
 		line++
+
 	}
 }

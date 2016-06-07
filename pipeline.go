@@ -1,6 +1,46 @@
 package petl
 
-import "sync"
+import (
+	"strings"
+	"sync"
+	"sync/atomic"
+)
+
+//Spawn :N routines, after each completes runs all whendone functions
+func Spawn(N int, fn func(), whendone ...func()) {
+	waiting := int32(N)
+	for k := 0; k < N; k++ {
+		go func() {
+			fn()
+			if atomic.AddInt32(&waiting, -1) == 0 {
+				for _, fn := range whendone {
+					fn()
+				}
+			}
+		}()
+	}
+}
+
+//Extract :
+func Extract(strs ...string) <-chan string {
+	out := make(chan string, len(strs))
+	for _, n := range strs {
+		out <- n
+	}
+	close(out)
+	return out
+}
+
+//TransformRemoveSpace :
+func TransformRemoveSpace(in <-chan string) <-chan string {
+	out := make(chan string, len(in))
+	for n := range in {
+		ret := strings.Replace(n, " ", "", -1)
+		out <- ret
+	}
+	close(out)
+	return out
+}
 
 func gen(nums ...int) <-chan int {
 	out := make(chan int, len(nums))
