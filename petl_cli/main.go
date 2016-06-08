@@ -11,10 +11,10 @@ import (
 )
 
 func main() {
-	pattern := flag.String("pattern", "", "Pattern definition to look for")
+	pipeline := flag.String("pipeline", "", "Pipeline list for this ETL process")
 	flag.Parse()
 
-	if *pattern == "" {
+	if *pipeline == "" {
 		fmt.Println("Pattern argument is missing.")
 		fmt.Println("Usage:")
 		flag.PrintDefaults()
@@ -26,10 +26,10 @@ func main() {
 	if (info.Mode() & os.ModeCharDevice) == os.ModeCharDevice {
 		fmt.Println("The command is intended to work with pipes.")
 		fmt.Println("Usage:")
-		fmt.Println("  cat yourfile.txt | searchr -pattern=<your_pattern>")
+		fmt.Println("  cat yourfile.txt | petl_cli -pipelone=<your_pipeline>")
 	} else if info.Size() > 0 {
 		reader := bufio.NewReader(os.Stdin)
-		match(*pattern, reader)
+		match(*pipeline, reader)
 	}
 }
 

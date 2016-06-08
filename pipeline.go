@@ -6,6 +6,8 @@ import (
 	"sync/atomic"
 )
 
+type pipeline func(<-chan string) <-chan string
+
 //Spawn :N routines, after each completes runs all whendone functions
 func Spawn(N int, fn func(), whendone ...func()) {
 	waiting := int32(N)
@@ -19,6 +21,15 @@ func Spawn(N int, fn func(), whendone ...func()) {
 			}
 		}()
 	}
+}
+
+//PipeProcess :
+func PipeProcess(initData <-chan string, pipelines ...pipeline) <-chan string {
+	data := initData
+	for _, fn := range pipelines {
+		data = fn(data)
+	}
+	return data
 }
 
 //Extract :

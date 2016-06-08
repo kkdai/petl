@@ -3,7 +3,6 @@ package petl
 import (
 	"log"
 	"testing"
-	"time"
 )
 
 func foo() {
@@ -14,11 +13,16 @@ func bar() {
 	log.Println("bar")
 }
 
-func TestSpawn(t *testing.T) {
-
-	Spawn(3, foo, bar)
-	time.Sleep(time.Second * 3)
+func TestPipelines(t *testing.T) {
+	ret := PipeProcess(Extract("a  s", " smm", "sss"), TransformRemoveSpace, TransformRemoveSpace)
+	log.Println("ret:", <-ret)
 }
+
+//func TestSpawn(t *testing.T) {
+
+//Spawn(3, foo, bar)
+//time.Sleep(time.Second * 3)
+//}
 
 func TestETL1(t *testing.T) {
 	c := Extract("a s", " smmm", "sss")
