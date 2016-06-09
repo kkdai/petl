@@ -6,7 +6,7 @@ import (
 	"sync/atomic"
 )
 
-type pipeline func(<-chan string) <-chan string
+type Pipeline func(<-chan string) <-chan string
 
 //Spawn :N routines, after each completes runs all whendone functions
 func Spawn(N int, fn func(), whendone ...func()) {
@@ -24,7 +24,7 @@ func Spawn(N int, fn func(), whendone ...func()) {
 }
 
 //PipeProcess :
-func PipeProcess(initData <-chan string, pipelines ...pipeline) <-chan string {
+func PipeProcess(initData <-chan string, pipelines []Pipeline) <-chan string {
 	data := initData
 	for _, fn := range pipelines {
 		data = fn(data)
@@ -42,11 +42,43 @@ func Extract(strs ...string) <-chan string {
 	return out
 }
 
+//TransformDefault :
+func TransformDefault(in <-chan string) <-chan string {
+	out := make(chan string, len(in))
+	for n := range in {
+		out <- n
+	}
+	close(out)
+	return out
+}
+
 //TransformRemoveSpace :
 func TransformRemoveSpace(in <-chan string) <-chan string {
 	out := make(chan string, len(in))
 	for n := range in {
 		ret := strings.Replace(n, " ", "", -1)
+		out <- ret
+	}
+	close(out)
+	return out
+}
+
+//TransformLower :
+func TransformLower(in <-chan string) <-chan string {
+	out := make(chan string, len(in))
+	for n := range in {
+		ret := strings.ToLower(n)
+		out <- ret
+	}
+	close(out)
+	return out
+}
+
+//TransformUpper :
+func TransformUpper(in <-chan string) <-chan string {
+	out := make(chan string, len(in))
+	for n := range in {
+		ret := strings.ToUpper(n)
 		out <- ret
 	}
 	close(out)

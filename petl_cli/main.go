@@ -29,11 +29,31 @@ func main() {
 		fmt.Println("  cat yourfile.txt | petl_cli -pipelone=<your_pipeline>")
 	} else if info.Size() > 0 {
 		reader := bufio.NewReader(os.Stdin)
-		match(*pipeline, reader)
+		processPipe(preparePipeline(*pipeline), reader)
 	}
 }
 
-func match(pattern string, reader *bufio.Reader) {
+func preparePipeline(pline string) []etl.Pipeline {
+	var retPipeline []etl.Pipeline
+
+	for _, str := range pline {
+		var targetPipe etl.Pipeline
+		switch {
+		case string(str) == "R" || string(str) == "r":
+			targetPipe = etl.TransformRemoveSpace
+		case string(str) == "L" || string(str) == "l":
+			targetPipe = etl.TransformLower
+		case string(str) == "U" || string(str) == "u":
+			targetPipe = etl.TransformUpper
+		default:
+			targetPipe = etl.TransformDefault
+		}
+		retPipeline = append(retPipeline, targetPipe)
+	}
+	return retPipeline
+}
+
+func processPipe(plines []etl.Pipeline, reader *bufio.Reader) {
 	line := 1
 	for {
 		input, err := reader.ReadString('\n')
@@ -41,13 +61,8 @@ func match(pattern string, reader *bufio.Reader) {
 			break
 		}
 
-		color := "\x1b[39m"
-		// if strings.Contains(input, pattern) {
-		// 	color = "\x1b[31m"
-		// }
-
-		// fmt.Printf("%s%2d: %s", color, line, input)
-		fmt.Printf("%s%2d: %s", color, line, <-etl.TransformRemoveSpace(etl.Extract(input)))
+		out := etl.PipeProcess(etl.Extract(input), plines)
+		fmt.Printf("%2d: %s", line, <-out)
 		line++
 
 	}

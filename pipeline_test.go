@@ -14,7 +14,7 @@ func bar() {
 }
 
 func TestPipelines(t *testing.T) {
-	ret := PipeProcess(Extract("a  s", " smm", "sss"), TransformRemoveSpace, TransformRemoveSpace)
+	ret := PipeProcess(Extract("a  s", " smm", "sss"), []Pipeline{TransformRemoveSpace, TransformRemoveSpace})
 	log.Println("ret:", <-ret)
 }
 
