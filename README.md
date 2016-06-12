@@ -38,6 +38,25 @@ go get github.com/kkdai/petl/petl_cli
 Usage
 ---------------
 
+Use pipeline for pipe string
+
+
+
+```
+//Remove all space in output
+cat somefile.txt | petl_cli pipeline="r"
+
+//Make upper case
+cat somefile.txt | petl_cli pipeline="u"
+
+//Make lower case 
+cat somefile.txt | petl_cli pipeline="l"
+
+//Pipeline it
+//Will make lower case first then upper case, final remove all space.
+cat somefile.txt | petl_cli pipeline="lur"
+```
+
 
 Inspired By
 ---------------
